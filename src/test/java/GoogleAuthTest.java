@@ -1,6 +1,8 @@
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.*;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.testng.Assert.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -20,35 +22,38 @@ public class GoogleAuthTest {
             driver = new FirefoxDriver();
             baseUrl = "https://accounts.google.com/ServiceLogin?service=mail&passive=true&rm=false";
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+            driver.manage().window().maximize();
         }
 
         @Test
         public void testQatest1() throws Exception {
-            driver.get(baseUrl);
-            driver.findElement(By.name("login")).click();
-            driver.findElement(By.name("login")).clear();
-            driver.findElement(By.name("login")).sendKeys("qatestnew1989");
-            driver.findElement(By.name("passwd")).clear();
 
+            String topic = "First Text 1";
+            String messageText = "Text Blah Blah";
+            String name = "Иброгим";
 
-            driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+            driver.get(baseUrl);    /* Navigate to HomePage */
+            driver.findElement(By.id("Email")).sendKeys("qatestnew1989@gmail.com"); /* Fill e-mail */
+            driver.findElement(By.id("next")).click();  /* Click "Next" button */
+            driver.findElement(By.id("Passwd")).sendKeys("0637456058"); /* Fill password */
+            driver.findElement(By.id("signIn")).click();    /* Click "SignIn" button */
+            driver.get("https://mail.google.com/mail/#inbox");  /* Navigate to "My e-mail" */
+            driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);   /* waiting for fully page loading */
 
+            assertEquals(driver.findElement(By.cssSelector(".gb_P.gb_R")).getText(), (name));   /* login assertion */
 
+            driver.findElement(By.cssSelector(".z0 div")).click();  /* Click "Write" button */
+            driver.findElement(By.cssSelector(".wO.nr.l1 textarea")).sendKeys("shnayper_89@mail.ru");   /* Fill e-mail "send to" field */
+            driver.findElement(By.cssSelector(".aoT")).sendKeys(topic); /* Fill topic field */
+            driver.findElement(By.cssSelector(".Ar.Au div")).sendKeys(messageText); /* Fill text of message */
+            driver.findElement(By.cssSelector(".T-I.J-J5-Ji.aoO.T-I-atl.L3")).click();  /* Click "Send" button */
+            driver.findElement(By.cssSelector(".ag.a8k")).click();  /* Open sent messages  */
 
-            driver.findElement(By.name("passwd")).sendKeys("qwe123asd");
-            driver.findElement(By.cssSelector("label.checkbox__label")).click();
-            driver.findElement(By.name("twoweeks")).click();
-            driver.findElement(By.xpath("//button[@type='submit']")).click();
-            driver.findElement(By.cssSelector("img.b-ico.b-ico_compose")).click();
-            // ERROR: Caught exception [Error: unknown strategy [class] for locator [class=b-mail-input_yabbles]]
-            // ERROR: Caught exception [Error: unknown strategy [class] for locator [class=b-mail-input_yabbles]]
-            driver.findElement(By.id("compose-subj")).clear();
-            driver.findElement(By.id("compose-subj")).sendKeys("qatest2");
-            driver.findElement(By.id("compose-submit")).click();
-            driver.findElement(By.linkText("Отправленные")).click();
-            driver.findElement(By.xpath("//div[@id='js-page']/div/div[5]/div/div[3]/div/div[3]/div/div/div/div/div[3]/div[2]/div/div[2]/div[2]/div/span[2]/span/a/span/span")).click();
-            driver.findElement(By.cssSelector("span.header-user-name.js-header-user-name")).click();
-            driver.findElement(By.linkText("Выход")).click();
+            assertEquals(driver.findElement(By.cssSelector(".hP")).getText(), (topic)); /* Comparison */
+
+            driver.findElement(By.cssSelector(".gb_2a.gbii")).click();
+            driver.findElement(By.cssSelector(".gb_Ea.gb_te.gb_Ae.gb_qb")).click(); /* Click "LogOut" button */
+
         }
 
         @AfterClass(alwaysRun = true)
